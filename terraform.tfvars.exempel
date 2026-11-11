@@ -1,0 +1,6 @@
+# Kopiera till terraform.tfvars och fyll i. Den filen är gitignorerad.
+proxmox_endpoint     = "https://10.10.0.3:8006"
+proxmox_token_id     = "terraform@pve!provider"
+proxmox_token_secret = "HEMLIG-LÄGG-INTE-I-GIT"
+ssh_public_key       = "ssh-ed25519 AAAA... namn@dator"
+ssh_private_key_path = "C:/Users/<namn>/.ssh/id_terraform_pve"

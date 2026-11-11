@@ -1,0 +1,16 @@
+version: 2
+ethernets:
+  # Produktionsnätet 192.168.50.0/24 på den isolerade bryggan ovsbr-sstab.
+  # Fast adress enligt IP-planen. Ingen gateway: nätet har ingen väg ut.
+  # DNS är domänkontrollanten SRV-01-DC.
+  ens18:
+    dhcp4: false
+    addresses: [192.168.50.50/24]
+    nameservers:
+      addresses: [192.168.50.10]
+      search: [sost.local]
+  # Driftnätet, VLAN 70. Används för SSH från adminklienten och för
+  # paketuppdateringar. Adress, gateway och DNS kommer från DHCP.
+  ens19:
+    dhcp4: true
+    dhcp-identifier: mac

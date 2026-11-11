@@ -1,0 +1,7 @@
+# Lokala filer som aldrig ska till git
+terraform.tfvars
+hemligheter.txt
+*.tfstate*
+tfplan
+.terraform/
+*.log

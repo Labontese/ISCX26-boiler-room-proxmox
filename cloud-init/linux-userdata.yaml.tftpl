@@ -1,0 +1,35 @@
+#cloud-config
+hostname: srv-02-lnx
+manage_etc_hosts: true
+timezone: Europe/Stockholm
+
+users:
+  - name: daniel
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: [sudo, adm]
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+# Den andra disken (scsi1) blir backupdisken, monterad på /srv/backup.
+disk_setup:
+  /dev/sdb:
+    table_type: gpt
+    layout: true
+    overwrite: false
+fs_setup:
+  - label: backup
+    filesystem: ext4
+    device: /dev/sdb1
+mounts:
+  - [LABEL=backup, /srv/backup, ext4, "defaults,nodev,nosuid,noexec", "0", "2"]
+
+package_update: true
+packages:
+  - qemu-guest-agent
+  - samba
+  - smbclient
+  - acl
+
+runcmd:
+  - systemctl enable --now qemu-guest-agent
