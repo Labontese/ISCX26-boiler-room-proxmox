@@ -20,6 +20,7 @@ Produktionsnätet 192.168.50.0/24 är en isolerad virtuell switch på Proxmox. V
 | [01 Miljön på Proxmox](dokumentation/01-miljon-pa-proxmox.md) | Virtuella switchen, Terraform, nätverkskorten, första steget på SRV-01-DC |
 | [02 Backupmålet SRV-02-LNX](dokumentation/02-backupmal-srv-02-lnx.md) | Backupdisken, Samba-delningen och brandväggen |
 | [03 Domänkontrollanten SRV-01-DC](dokumentation/03-domankontrollant-srv-01-dc.md) | AD DS, OU:er och grupper, fildelning, DNS och DHCP, minsta rättighet, lösenordspolicy, prov av behörigheterna |
+| [Det som saknas i infra-sstab](dokumentation/guide-det-som-saknas-i-infra-sstab.md) | Arbetslista för teamets officiella repo, jämfört med uppgiften och kursmålen |
 
 ## Filer
 
