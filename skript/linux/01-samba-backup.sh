@@ -56,7 +56,9 @@ testparm -s > /dev/null
 
 # 4. Sambalösenordet för svc-backup.
 read -r LOSEN
-LOSEN=${LOSEN%$'\r'}   # ta bort CR om lösenordet skickas från Windows
+# PowerShell lägger en BOM först och CRLF sist när text pipas till ssh.
+LOSEN=${LOSEN#$'\xef\xbb\xbf'}
+LOSEN=${LOSEN%$'\r'}
 printf '%s\n%s\n' "$LOSEN" "$LOSEN" | smbpasswd -s -a svc-backup > /dev/null
 smbpasswd -e svc-backup > /dev/null
 
