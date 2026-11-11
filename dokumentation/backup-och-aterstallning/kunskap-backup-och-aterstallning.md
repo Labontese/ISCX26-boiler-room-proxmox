@@ -37,8 +37,8 @@ En vanlig tumregel för backup:
 | | Hos Skämt & Sido |
 |---|---|
 | Original | SRV-01-DC |
-| Kopia 1 | Senaste backupen på delningen `/srv/backup/wsb` på SRV-02-LNX |
-| Kopia 2 | Daterade kopior i `/srv/backup/arkiv` på SRV-02-LNX |
+| Kopia 1 | Senaste backupen på delningen `/srv/samba/backups` på SRV-02-LNX |
+| Kopia 2 | Daterade kopior i `/srv/samba/arkiv` på SRV-02-LNX |
 | Utanför huset | **Saknas.** Båda servrarna står på samma Proxmox-värd. Se [Kvarstående risker](#kvarstående-risker) |
 
 ## Vad som är kritiskt
@@ -72,11 +72,11 @@ Utöver System State tar Skämt & Sido med `C:\Fildelning` och DHCP-tjänstens e
 
 Till en nätverksdelning sparar WSB bara den senaste backupen. Microsoft skriver att en ny backup skriver över den gamla, och att en misslyckad körning kan lämna ingen användbar backup alls. Det går heller inte att ange fler mål tillsammans med en delning.
 
-Därför finns arkivet på SRV-02-LNX. Linux kopierar varje ny backup till en daterad mapp som inte är utdelad. Det ger flera versioner, och en angripare som tar över SRV-01-DC och kontot `svc-backup` kan skriva över den senaste backupen men inte radera arkivet.
+Därför finns arkivet på SRV-02-LNX. Linux kopierar varje ny backup till en daterad mapp som inte är utdelad. Det ger flera versioner, och en angripare som tar över SRV-01-DC och kontot `backupuser` kan skriva över den senaste backupen men inte radera arkivet.
 
 ### Tjänstekontot
 
-`svc-backup` är medlem i Backup Operators, inte i Domain Admins. Det är minsta möjliga rättighet: kontot kan ta och återställa backup men inte administrera domänen. Samma konto, med samma lösenord, finns som Samba-användare på SRV-02-LNX, och det är det enda kontot som får skriva i delningen `backup`.
+`backupuser` är medlem i Backup Operators, inte i Domain Admins. Det är minsta möjliga rättighet: kontot kan ta och återställa backup men inte administrera domänen. Samma konto, med samma lösenord, finns som Samba-användare på SRV-02-LNX, och det är det enda kontot som får skriva i delningen `backups`.
 
 ## Typer av återställning
 
