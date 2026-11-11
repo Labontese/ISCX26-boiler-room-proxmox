@@ -2,8 +2,6 @@
 
 Planera, genomföra och verifiera säkerhetskopiering och återställning av Skämt & Sido Transports kritiska konfigurationsfiler och data på Windows Server. Backupen tas med Windows Server Backup (WSB) och sparas på Ubuntu-filservern via Samba.
 
-Namnen följer teamets miljö: kontot `backupuser`, delningen `backups` och nätverkskortet `enp0s3`. I labbet på Proxmox heter de `svc-backup`, `backup` och `ens18`, se [02 Backupmålet SRV-02-LNX](../02-backupmal-srv-02-lnx.md) och [03 Domänkontrollanten SRV-01-DC](../03-domankontrollant-srv-01-dc.md).
-
 **Förutsättningar:**
 
 * SRV-01-DC är domänkontrollant för `sost.local` med `C:\Fildelning` enligt Fildelning.md i infra-sstab.
@@ -76,7 +74,7 @@ Logga in med `ssh <användare>@192.168.50.50`.
    backupuser = backupuser@sost.local
    ```
 
-   Utan raden nekas inloggningen med `System error 1326`, vilket är provat i labbet. Med raden: inte provad än, se [Verifiering](#4-verifiering).
+   Utan raden nekas inloggningen med `System error 1326`. Med raden: inte provad än, se [Verifiering](#4-verifiering).
 
 5. Kontrollera filen, sätt Samba-lösenordet och starta om:
 
@@ -152,7 +150,7 @@ Logga in som domänadministratör och öppna PowerShell som administratör.
 
 ## 4. Verifiering
 
-**Pågår.** Första backupen i labbet startades manuellt 2026-11-11 kl. 10:41 med samma innehåll som schemat. Den första fasen, där WSB räknar upp filerna i System State, hade efter 46 minuter kommit till 153 305 filer.
+**Pågår.** Första backupen startades manuellt 2026-11-11 kl. 10:41 med samma innehåll som schemat. Den första fasen, där WSB räknar upp filerna i System State, hade efter 46 minuter kommit till 153 305 filer.
 
 När backupen är klar verifieras den i två delar, och resultatet förs in här:
 

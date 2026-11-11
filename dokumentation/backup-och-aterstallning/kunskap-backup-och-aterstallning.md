@@ -39,7 +39,7 @@ En vanlig tumregel för backup:
 | Original | SRV-01-DC |
 | Kopia 1 | Senaste backupen på delningen `/srv/samba/backups` på SRV-02-LNX |
 | Kopia 2 | Daterade kopior i `/srv/samba/arkiv` på SRV-02-LNX |
-| Utanför huset | **Saknas.** Båda servrarna står på samma Proxmox-värd. Se [Kvarstående risker](#kvarstående-risker) |
+| Utanför huset | **Saknas.** Båda servrarna står i samma serverrum. Se [Kvarstående risker](#kvarstående-risker) |
 
 ## Vad som är kritiskt
 
@@ -86,7 +86,7 @@ Därför finns arkivet på SRV-02-LNX. Linux kopierar varje ny backup till en da
 | GPO | En grupprincip är felaktigt ändrad | Återställ mappen i SYSVOL, eller GPO-backup med `Restore-GPO` |
 | AD-objekt | En användare eller grupp är raderad | AD:s papperskorg om den är påslagen, annars System State i DSRM med auktoritativ återställning |
 | System State | AD eller registret är förstört | Starta i DSRM (Directory Services Restore Mode), `wbadmin start systemstaterecovery` |
-| Hela servern | Servern går inte att starta | Ny server från Terraform, sedan System State och filer från backupen |
+| Hela servern | Servern går inte att starta | Ny server installeras enligt installationsdokumentationen, sedan System State och filer från backupen |
 
 **DSRM** är ett felsäkert läge för domänkontrollanter där AD inte körs. Det har ett eget lösenord, som sattes när servern blev domänkontrollant. Lösenordet förvaras utanför servern.
 
@@ -98,7 +98,7 @@ Därför finns arkivet på SRV-02-LNX. Linux kopierar varje ny backup till en da
 |---|---|
 | `tar -czf` packar katalogen | `wbadmin` tar en VSS-ögonblicksbild till `.vhdx` |
 | Filnamn med datum, `viktig_data_ÅÅÅÅ-MM-DD_TTMM.tar.gz` | WSB:s egna mappar, arkivet får datum: `SRV-01-DC_ÅÅÅÅ-MM-DD_TTMM` |
-| Separat backupdisk `/mnt/backup` | Separat server, SRV-02-LNX, med egen backupdisk |
+| Separat backupdisk `/mnt/backup` | Separat server, SRV-02-LNX |
 | `cron` | WSB:s schema på Windows och `systemd`-timer på Linux |
 | `sha256sum -c` | Kontrollsummor i arkivet, och hash före och efter provåterställning |
 | `tar -xzf` till ursprunglig plats | `wbadmin start recovery` till ursprunglig plats |
@@ -108,7 +108,7 @@ Därför finns arkivet på SRV-02-LNX. Linux kopierar varje ny backup till en da
 
 | Risk | Följd | Åtgärd som föreslås |
 |---|---|---|
-| Ingen kopia utanför huset | Brand eller stöld av Proxmox-värden tar både servrar och backup | Kopiera arkivet till molnlagring eller en disk som förvaras på annan plats |
+| Ingen kopia utanför huset | Brand eller stöld i serverrummet tar både servrar och backup | Kopiera arkivet till molnlagring eller en disk som förvaras på annan plats |
 | En domänkontrollant | Går SRV-01-DC sönder går ingen inloggning tills den är återställd | En andra domänkontrollant |
 | Backupen är inte krypterad på disken | Den som kommer åt SRV-02-LNX kan läsa AD-databasen | Kryptera backupdisken |
 
