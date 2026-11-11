@@ -16,7 +16,7 @@ Planera, genomföra och verifiera säkerhetskopiering och återställning av Sk�
 | Destination | Samba-delningen `\\192.168.50.50\backups` på SRV-02-LNX, mappen `/srv/samba/backups` |
 | Konto | `backupuser@sost.local`, medlem i Backup Operators. Samma namn och lösenord som Samba-användaren `backupuser` på SRV-02-LNX |
 | Metod | Schemalagd full backup med WSB varje natt kl. 03:00 |
-| Versioner | WSB skriver över förra backupen på en nätverksdelning. SRV-02-LNX kopierar därför varje ny backup till `/srv/samba/arkiv`, som inte är utdelad, och sparar kopiorna i 14 dagar |
+| Versioner | WSB skriver över förra backupen på en nätverksdelning. SRV-02-LNX kopierar därför varje ny backup till `/srv/samba/arkiv`, som inte är utdelad, och sparar kopiorna i 4 dagar. En backup är cirka 13 GB, så backupdisken måste rymma fem kopior och den senaste backupen, cirka 78 GB |
 | Nät | Bara produktionsnätet 192.168.50.0/24. Trafiken är krypterad med SMB3 |
 | RPO | Högst ett dygn: data som skapas efter 03:00 finns i backupen nästa natt |
 | Ansvar | IT-avdelningen (gruppen `gg-it`) |
@@ -150,9 +150,60 @@ Logga in som domänadministratör och öppna PowerShell som administratör.
 
 ## 4. Verifiering
 
-**Pågår.** Första backupen startades manuellt 2026-11-11 kl. 10:41 med samma innehåll som schemat. Den första fasen, där WSB räknar upp filerna i System State, hade efter 46 minuter kommit till 153 305 filer.
+Verifierat 2026-11-11.
 
-När backupen är klar verifieras den i två delar, och resultatet förs in här:
+### Backupen
 
-1. **Backupen:** att versionen finns på delningen (`wbadmin get versions`), att arkivet på SRV-02-LNX har fått en daterad kopia med kontrollsummor, och hur lång tid backupen tog.
-2. **Återställningen:** en avdelningsmapp i `C:\Fildelning` raderas och återställs från backupen. Innehållet jämförs med kontrollsummor (`Get-FileHash`) och NTFS-behörigheterna med `icacls`, före och efter. Tiden mäts och blir det uppmätta RTO-värdet.
+En första backup startades manuellt kl. 10:41 med samma innehåll som schemat:
+
+```text
+The backup operation successfully completed.
+The backup of volume Windows(C:) completed successfully.
+The backup of the system state successfully completed [2026-11-11 11:17].
+```
+
+| Kontroll | Resultat |
+|---|---|
+| Tid för backupen | 98 minuter. Mest tid tog uppräkningen av drygt 153 000 filer i System State, som Microsoft Defender genomsöker en i taget |
+| Storlek på SRV-02-LNX | 13 GB |
+| Schemat (`Get-WBPolicy`) | Kl. 03:00, System State, `C:\Fildelning\`, `C:\Windows\System32\dhcp\backup\`, `VssFullBackup` |
+| Nästa backup (`Get-WBSummary`) | 2026-11-12 03:00 |
+| Kryptering (`smbstatus -S` på SRV-02-LNX) | AES-128-GCM |
+| Arkivet | Kopia på 13 GB med kontrollsummor för 20 filer, kontrollerad mot källan, klar på cirka 7 minuter |
+
+Arkivskriptet stoppade två gånger innan kopian togs, som det ska: först för att backupen fortfarande hade filer öppna, sedan för att den hade ändrats de senaste 30 minuterna.
+
+### Återställningen
+
+Provet: mappen `C:\Fildelning\HR` raderades och återställdes från backupen till sin ursprungliga plats, med ett provskript som sparar kontrollsummor och behörigheter före och jämför efter.
+
+```text
+Raderad: C:\Fildelning\HR finns = False
+Version: 11/11/2026-09:41
+Efter: 1 filer
+Innehåll lika: True
+NTFS-behörigheter lika: True
+Tid för återställningen: 25 sekunder
+C:\Fildelning\HR BUILTIN\Administrators:(F)
+                 SOST\dl-hr-rw:(OI)(CI)(M)
+                 CREATOR OWNER:(OI)(CI)(IO)(F)
+                 BUILTIN\Administrators:(OI)(CI)(F)
+                 NT AUTHORITY\SYSTEM:(OI)(CI)(F)
+```
+
+| Kontroll | Resultat |
+|---|---|
+| Innehåll, SHA256 före och efter | Lika |
+| NTFS-behörigheter, `icacls /save` före och efter | Lika. Arvet är fortfarande brutet och `Users` saknas |
+| Uppmätt RTO för en mapp | 25 sekunder från anslutning till klar återställning |
+| HR-användaren efter återställningen | Kan skriva i HR, kan läsa men inte skriva i Gemensamma dokument, nekas i Ekonomi |
+
+Versionen i `wbadmin get versions` anges i UTC: `09:41` är 10:41 svensk tid.
+
+### Inte provat
+
+| Vad | Varför |
+|---|---|
+| Namnmappningen för UPN i Samba | Att Samba nekar UPN utan den är provat. Att mappningen löser det är inte provat |
+| Återställning av System State (AD) | Kräver omstart i DSRM. Stegen står i [kunskap: backup och återställning](kunskap-backup-och-aterstallning.md#typer-av-återställning) |
+| Återställning från arkivet | Instruktionen finns i [rutinen](rutin-backup-och-aterstallning.md) |

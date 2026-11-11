@@ -21,7 +21,7 @@ En backup som aldrig har återställts är inte bevisad. Därför ingår provåt
 |---|---|---|
 | **RPO** (Recovery Point Objective) | Hur mycket data som högst får gå förlorad, mätt i tid | Högst ett dygn: backup varje natt kl. 03:00 |
 | **RTO** (Recovery Time Objective) | Hur lång tid återställningen högst får ta | Mäts vid varje provåterställning och skrivs in i driftloggen |
-| **Retention** | Hur länge gamla backuper sparas | 14 dagar i arkivet på SRV-02-LNX |
+| **Retention** | Hur länge gamla backuper sparas | 4 dagar i arkivet på SRV-02-LNX. Antalet dagar styrs av diskens storlek: varje kopia är cirka 13 GB |
 | **Full backup** | Allt kopieras varje gång | Windows Server Backup till nätverksdelning gör alltid full backup |
 | **Inkrementell backup** | Bara det som ändrats sedan förra backupen | Används inte |
 | **Verifiering** | Kontroll av att backupen går att läsa och återställa | Kontrollsummor i arkivet och provåterställning varje månad |
