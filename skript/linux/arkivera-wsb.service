@@ -1,0 +1,9 @@
+[Unit]
+Description=Daterad kopia av Windows Server Backup från SRV-01-DC
+RequiresMountsFor=/srv/backup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/arkivera-wsb.sh
+StandardOutput=append:/var/log/arkivera-wsb.log
+StandardError=append:/var/log/arkivera-wsb.log

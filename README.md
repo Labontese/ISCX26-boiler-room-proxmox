@@ -20,6 +20,8 @@ Produktionsnätet 192.168.50.0/24 är en isolerad virtuell switch på Proxmox. V
 | [01 Miljön på Proxmox](dokumentation/01-miljon-pa-proxmox.md) | Virtuella switchen, Terraform, nätverkskorten, första steget på SRV-01-DC |
 | [02 Backupmålet SRV-02-LNX](dokumentation/02-backupmal-srv-02-lnx.md) | Backupdisken, Samba-delningen och brandväggen |
 | [03 Domänkontrollanten SRV-01-DC](dokumentation/03-domankontrollant-srv-01-dc.md) | AD DS, OU:er och grupper, fildelning, DNS och DHCP, minsta rättighet, lösenordspolicy, prov av behörigheterna |
+| [How-to: säkerhetskopiera SRV-01-DC och återställa](dokumentation/backup-och-aterstallning/how-to-backup-windows-server.md) | Plan, genomförande och verifiering av backup och återställning. Verifieringen pågår |
+| [Kunskap: backup och återställning](dokumentation/backup-och-aterstallning/kunskap-backup-och-aterstallning.md) | Begrepp, 3-2-1, hur Windows Server Backup fungerar, typer av återställning, kvarstående risker |
 | [Det som saknas i infra-sstab](dokumentation/guide-det-som-saknas-i-infra-sstab.md) | Arbetslista för teamets officiella repo, jämfört med uppgiften och kursmålen |
 
 ## Filer
@@ -31,6 +33,8 @@ Produktionsnätet 192.168.50.0/24 är en isolerad virtuell switch på Proxmox. V
 | `cloud-init/` | Nätverk, användare och backupdisk för SRV-02-LNX |
 | `skript/linux/` | Skript som körs på SRV-02-LNX |
 | `skript/windows/` | Skript som körs på SRV-01-DC |
+
+Arkivskriptet `skript/linux/arkivera-wsb.sh` med systemd-tjänst och timer, och backupschemat `skript/windows/08-backup-schema.ps1`, provas när den första backupen är klar.
 
 ## Hemligheter
 
